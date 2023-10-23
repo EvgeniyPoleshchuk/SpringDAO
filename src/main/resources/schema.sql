@@ -1,3 +1,4 @@
+
 create table Customers
 (
     id           serial primary key,
@@ -6,9 +7,6 @@ create table Customers
     age          int,
     phone_Number varchar
 );
-insert into Customers(name, surname, age, phone_number)
-VALUES ('ANTON', 'Ivanov', 24, '89211122233');
-
 create table Orders
 (
     id           serial primary key,
@@ -19,6 +17,5 @@ create table Orders
     amount       int
 
 );
-insert into Orders(date, customer_id,product_name,amount)
-    VALUES ('24.05.2023',1,'TABLE',1233)
+
 

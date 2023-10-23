@@ -1,43 +1,25 @@
 package ru.netology.springdao.repository;
 
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Repository
 public class RepositoryDao {
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private String param;
 
-    public RepositoryDao(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        param = read("productScripts.sql");
-    }
-
+    @PersistenceContext
+    private EntityManager entityManager;
     public List<String> getProductName(String customerName) {
+        String param = "select o.productName from CustomerOrders o where lower(customers.name) = lower(:name)";
 
-        return namedParameterJdbcTemplate.query(param, new MapSqlParameterSource()
-                        .addValue("name", customerName),
-                (rs, rowNum) -> rs.getString("product_name"));
+        return entityManager.createQuery(param, String.class).setParameter("name", customerName).getResultList();
     }
 
-
-    private static String read(String scriptFileName) {
-        try (InputStream is = new ClassPathResource(scriptFileName).getInputStream();
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is))) {
-            return bufferedReader.lines().collect(Collectors.joining("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
